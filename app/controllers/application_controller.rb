@@ -3,7 +3,11 @@ class ApplicationController < ActionController::API
 
  def verify_jwt_token
  	head :unauthorized if request.headers['Authorization'].nil? || 
- 	!Devise::Strategies::JWTAuthentication.valid?(request)
+ 	!current_user
+ end
+
+ def current_user
+ 	Devise::Strategies::JWTAuthentication.valid?(request)
  end
 
 end

@@ -1,5 +1,20 @@
 class Api::V1::RequestsController < Api::V1::BaseController
 
+  before_action only: :create do |c|
+  meth = c.method(:validate_json) 
+  meth.call (@json.has_key?('request') && @json['request'].respond_to?(:[]) && @json['request']['requestee_id'])
+ end
+
+  before_action only: :update do |c|
+  meth = c.method(:validate_json)
+  meth.call (@json.has_key?('request'))
+ end
+
+ before_action only: :update do |c|
+  meth = c.method(:check_existence)
+  meth.call(@friend_request, "Request", "find(@json['request']['id'])")
+ end
+
   # GET /requests
   # GET /requests.json
   def index
@@ -10,8 +25,7 @@ class Api::V1::RequestsController < Api::V1::BaseController
   # POST /requests
   # POST /requests.json
   def create
-    current_user = User.find(params[:request][:requestee_id])
-    @friend_request = current_user.sent_requests.build(request_params)
+    @friend_request = current_user.sent_requests.build(@json[:request])
     if @friend_request.save
       render json: { message: 'Friend request sent!' }, status: :ok
     else
@@ -22,17 +36,12 @@ class Api::V1::RequestsController < Api::V1::BaseController
   # PATCH/PUT /requests/1
   # PATCH/PUT /requests/1.json
   def update
-    @friend_request = Request.find(params[:id])
     @friend_request.accept
-    @profile = User.find(params[:request][:requester_id]).profile
-      render json: {profile: Api::V1::ProfileSerializer.new(@profile).as_json, mesage: 'Friend Request Accepted!'} status: :ok
+    @profile = User.find(@json[:request][:requester_id]).profile
+    render json: {profile: Api::V1::ProfileSerializer.new(@profile).as_json, mesage: 'Friend Request Accepted!'} status: :ok
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def request_params
-       params.require(:request).permit(:requestee_id)
-  end
+
+
 end

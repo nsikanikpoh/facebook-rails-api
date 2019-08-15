@@ -1,9 +1,8 @@
 class Api::V1::SessionsController < ApplicationController
-  respond_to :json
+   respond_to :json
    before_action :verify_jwt_token, except: :create
 
     def show
-       current_user = User.find(params[:user_id])
        current_user ? head(:ok) : head(:unauthorized)
     end
 

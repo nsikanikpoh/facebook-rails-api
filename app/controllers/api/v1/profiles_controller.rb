@@ -1,5 +1,4 @@
 class Api::V1::ProfilesController < Api::V1::BaseController
-  before_action :set_profile, only: [:show, :edit, :update]
 
   # GET /profiles/1
   # GET /profiles/1.json

@@ -15,6 +15,7 @@ Rails.application.routes.draw do
         get 'users/index'
         get 'privacy' => 'posts#privacy'
         get 'users/search'
+        post 'post_index' => 'posts#post_index'
         resources :posts, only: [:create, :show, :edit, :update, :index, :destroy]
         resources :comments, only: [:create, :edit, :update, :destroy]
         resources :likes, only: [:create, :destroy]

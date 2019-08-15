@@ -1,9 +1,6 @@
 class Api::V1::RegistrationsController < ApplicationController
   respond_to :json
   before_action :verify_jwt_token, except: :create
-
-  respond_to :json
-
   def create
     @user = User.new(sign_up_params)
     if @user.save && @user.valid?

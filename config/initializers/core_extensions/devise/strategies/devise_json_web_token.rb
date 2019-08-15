@@ -8,7 +8,7 @@ module Devise
 
       def authenticate!
         return if no_claims_or_no_claimed_user_id
-        success! User.find_by_id claims['user_id']
+        success! User.find(claims['user_id'])
       end
 
       protected

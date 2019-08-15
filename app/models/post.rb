@@ -3,8 +3,8 @@ class Post < ApplicationRecord
   has_many :comments
   has_many :likes
   validates :content, presence: true
-  default_scope -> { order(created_at: :asc) }
+  default_scope -> { order(created_at: :desc) }
   mount_uploader :image, ImageUploader
-  scope :friends_posts, -> (current_user) { where('user_id IN (?) OR user_id = ?',
-    current_user.friend_ids, current_user.id).order(:created_at) }
+  scope :friends_posts, -> (user) { where('user_id IN (?) OR user_id = ?',
+    user.friend_ids, user.id) }
 end
