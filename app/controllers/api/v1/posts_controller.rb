@@ -1,5 +1,6 @@
 class Api::V1::PostsController < Api::V1::BaseController
   skip_before_action :parse_request, only: :index
+  before_action :set_post, only: [:show, :post_delete, :update]
 
   before_action only: :create do |c|
   meth = c.method(:validate_json) 
@@ -10,11 +11,6 @@ class Api::V1::PostsController < Api::V1::BaseController
   meth = c.method(:validate_json)
   meth.call (@json.has_key?('post'))
  end
-
-  before_action only: [:show, :destroy, :update] do |c|
-  meth = c.method(:check_existence)
-  meth.call(@post, "Post", "find(@json['post']['id'])")
-end
 
  before_action :set_post_user, only: [:post_index, :create]
 
@@ -34,7 +30,7 @@ end
   end
 
 
-   def destroy
+   def post_delete
     if @post.present?
       authorize(@post)
       @post.destroy
@@ -47,21 +43,28 @@ end
   # GET /posts
   # GET /posts.json
   def post_index
-    @posts = Post.all
+    @posts = Post.friends_posts(@user)
     render json: @posts.map {|post| Api::V1::PostSerializer.new(post).as_json}
   end
 
-  def show 
+  def show
+    render json: Api::V1::PostSerializer.new(@post).as_json
   end
 
   private
 
     def set_post_user
-      @user = User.find(params['post']['user_id'])
+      @user = FinderService.find_resource(User, @json['post']['user_id'])
+      render nothing: true, status: :bad_request unless @user
+    end
+
+    def set_post
+      @post = FinderService.find_resource(Post, @json['post']['id'])
+      render nothing: true, status: :bad_request unless @post
     end
 
     def authorize(post)
-     render json: { error: 'invalid_credentials' }, status: :unauthorized unless post.user == current_user
+     render json: { error: 'invalid_credentials' }, status: :unauthorized unless post.user == set_post_user
     end
    
    

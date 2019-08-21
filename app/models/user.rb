@@ -10,12 +10,16 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :friends, dependent: :destroy
+  
   has_many :sent_requests, foreign_key: :requester_id, class_name: 'Request', dependent: :destroy
   has_many :received_requests, foreign_key: :requestee_id, class_name: 'Request', dependent: :destroy
+  
+
   has_many :requestees, through: :sent_requests, dependent: :destroy
   has_many :requesters, through: :received_requests, dependent: :destroy
+  
   has_many :accepted_sent_requests, -> { where accepted: true }, foreign_key: :requester_id, class_name: 'Request'
-  has_many :friends, through: :accepted_sent_requests
 
 
   def self.create_from_provider_data(provider_data)
@@ -36,4 +40,21 @@ class User < ApplicationRecord
   def make_profile
     self.create_profile.save
   end
+
+  def requests_count
+    self.received_requests.where(accepted: false).count
+  end
+
+  def friends_ids
+    FriendsService.friends_ids(self)
+  end
+
+  def friend_request_ids
+    RequestService.friend_request_ids(self)
+  end
+
+  def sent_request_ids
+    RequestService.sent_request_ids(self)
+  end
+
 end

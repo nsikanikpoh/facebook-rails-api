@@ -3,7 +3,6 @@ class Api::V1::BaseController < ApplicationController
    before_action :parse_request
    before_action :verify_jwt_token
 
-
    def validate_json(condition)
      unless condition
        render nothing: true, status: :bad_request
@@ -19,9 +18,6 @@ class Api::V1::BaseController < ApplicationController
 	  end
 	end
 
-	def check_existence(ivar, object, finder)
-	  instance_variable_set(ivar, instance_eval(object+"."+finder))
-	end
 
     private
 

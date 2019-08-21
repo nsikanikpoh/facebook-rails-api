@@ -1,4 +1,6 @@
 class Api::V1::CommentsController < Api::V1::BaseController
+  before_action :set_comment_user, only: [:create, :comment_delete]
+  before_action :set_comment, only: [:comment_delete, :update]
 
   before_action only: :create do |c|
   meth = c.method(:validate_json) 
@@ -10,11 +12,6 @@ class Api::V1::CommentsController < Api::V1::BaseController
   meth.call (@json.has_key?('comment'))
  end
 
-  before_action only: [:update, :destroy] do |c|
-  meth = c.method(:check_existence)
-  meth.call(@comment, "Comment", "find(@json['comment']['id'])")
- end
-
  def update
     if @comment.present?
       authorize(@comment)
@@ -24,8 +21,7 @@ class Api::V1::CommentsController < Api::V1::BaseController
    end
   end
 
-
-   def destroy
+   def comment_delete
     if @comment.present?
       authorize(@comment)
       @comment.destroy
@@ -38,16 +34,25 @@ class Api::V1::CommentsController < Api::V1::BaseController
   # POST /comments
   # POST /comments.json
   def create
-    @user = User.find(@json['comment']['user_id'])
     @comment = @user.comments.build(@json['comment'])
     update_values :@comment, @json['comment']
   end
 
+
   private
 
 
+   def set_comment
+     @comment = FinderService.find_resource(Comment, @json['comment']['id'])
+     render nothing: true, status: :bad_request unless @comment
+   end
+   def set_comment_user
+     @user = FinderService.find_resource(User, @json['comment']['user_id'])
+     render nothing: true, status: :bad_request unless @user
+  end
+
   def authorize(comment)
-      render json: { error: 'invalid_credentials' }, status: :unauthorized unless comment.user == current_user
+      render json: { error: 'invalid_credentials' }, status: :unauthorized unless comment.user == set_comment_user
    end
 
 end

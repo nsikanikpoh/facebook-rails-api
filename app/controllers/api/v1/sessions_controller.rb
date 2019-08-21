@@ -1,6 +1,7 @@
 class Api::V1::SessionsController < ApplicationController
    respond_to :json
    before_action :verify_jwt_token, except: :create
+   before_action :set_current_user, except: :create
 
     def show
        current_user ? head(:ok) : head(:unauthorized)
@@ -10,7 +11,7 @@ class Api::V1::SessionsController < ApplicationController
       @user = User.where(email: params[:email]).first
       if @user&.valid_password?(params[:password])
         jwt = WebToken.encode(@user)
-        render json:  { token: jwt, user: @user}, status: :created
+        render json:  { token: jwt, user: Api::V1::UserSerializer.new(@user).as_json}, status: :created
       else
         render json: { error: 'invalid_credentials' }, status: :unauthorized
       end

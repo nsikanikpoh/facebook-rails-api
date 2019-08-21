@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_12_130051) do
+ActiveRecord::Schema.define(version: 2019_07_11_200633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -26,6 +26,14 @@ ActiveRecord::Schema.define(version: 2019_07_12_130051) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "friends", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id"
+    t.uuid "otheruser_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_friends_on_user_id"
+  end
+
   create_table "likes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "user_id"
     t.uuid "post_id"
@@ -38,7 +46,7 @@ ActiveRecord::Schema.define(version: 2019_07_12_130051) do
 
   create_table "posts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "content"
-    t.uuid "user_id"
+    t.uuid "user_id", null: false
     t.string "image"
     t.datetime "image_updated_at"
     t.datetime "created_at", null: false
@@ -63,9 +71,9 @@ ActiveRecord::Schema.define(version: 2019_07_12_130051) do
   end
 
   create_table "requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "requester_id"
-    t.integer "requestee_id"
-    t.integer "accepted", default: 0
+    t.uuid "requester_id"
+    t.uuid "requestee_id"
+    t.boolean "accepted", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["requestee_id"], name: "index_requests_on_requestee_id"
@@ -96,8 +104,11 @@ ActiveRecord::Schema.define(version: 2019_07_12_130051) do
 
   add_foreign_key "comments", "posts"
   add_foreign_key "comments", "users"
+  add_foreign_key "friends", "users"
   add_foreign_key "likes", "posts"
   add_foreign_key "likes", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "profiles", "users"
+  add_foreign_key "requests", "users", column: "requestee_id"
+  add_foreign_key "requests", "users", column: "requester_id"
 end

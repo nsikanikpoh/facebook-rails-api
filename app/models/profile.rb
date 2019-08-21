@@ -24,4 +24,17 @@ class Profile < ApplicationRecord
       end
     end
   end
+
+  def user_full_name
+    "#{self.user.first_name} #{self.user.last_name}"
+  end
+
+  def user_first_name
+    "#{self.user.first_name}"
+  end
+
+  def user_friends
+    self.user.friends
+  end
+
 end
