@@ -4,10 +4,7 @@ class Api::V1::ProfilesController < Api::V1::BaseController
 
   before_action only: :update do |c|
   meth = c.method(:validate_json) 
-  meth.call (@json.has_key?('profile') && @json['profile'].respond_to?(:[]) && 
-    @json['profile']['user_id'] && @json['profile']['gender'] 
-    && @json['profile']['location'] && @json['profile']['bio'] && @json['profile']['birthday']
-    && @json['profile']['cover'] && @json['profile']['avatar'])
+  meth.call (@json.has_key?('profile') && @json['profile'].respond_to?(:[]) && @json['profile']['user_id'] && @json['profile']['gender'] && @json['profile']['location'] && @json['profile']['bio'] && @json['profile']['birthday'] && @json['profile']['cover'] && @json['profile']['avatar'])
  end
 
   before_action only: :show_profile do |c|
@@ -43,7 +40,8 @@ class Api::V1::ProfilesController < Api::V1::BaseController
 
 
    def set_profile
-     @profile = set_user.profile
+     set_user
+     @profile = @user.profile
      render nothing: true, status: :bad_request unless @profile
    end
 

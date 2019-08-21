@@ -17,7 +17,7 @@ Rails.application.routes.draw do
         post 'comment_delete' => 'comments#comment_delete'
         post 'like_delete' => 'likes#like_delete'
         post 'post_delete' => 'posts#post_delete'
-        post 'show_profile' => 'profile#show_profile'
+        post 'show_profile' => 'profiles#show_profile'
         resources :posts, only: [:create, :show, :update]
         resources :comments, only: [:create, :update]
         resources :likes, only: [:create]
