@@ -50,11 +50,11 @@ class User < ApplicationRecord
   end
 
   def friend_request_ids
-    RequestService.friend_request_ids(self)
+    RecievedRequestService.friend_received_request_ids(self)
   end
 
   def sent_request_ids
-    RequestService.sent_request_ids(self)
+    SentRequestService.sent_request_ids(self)
   end
 
 end

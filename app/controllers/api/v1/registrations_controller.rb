@@ -10,7 +10,6 @@ class Api::V1::RegistrationsController < ApplicationController
     end
   end
 
-
   def update
     @user = current_user
     if @user.update_attributes(sign_up_params) && @user.valid?
@@ -28,6 +27,7 @@ class Api::V1::RegistrationsController < ApplicationController
 
 
   private
+
 
   def sign_up_params
     params.require(:user).permit(:email, :password, :first_name, :last_name)

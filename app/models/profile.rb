@@ -34,7 +34,7 @@ class Profile < ApplicationRecord
   end
 
   def user_friends
-    self.user.friends
+    User.where('id IN (?)', FriendsService.friends_ids(self.user))
   end
 
 end
