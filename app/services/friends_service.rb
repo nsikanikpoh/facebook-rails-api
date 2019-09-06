@@ -1,5 +1,5 @@
 class FriendsService
 	def self.friends_ids(user)
-		user.friends.each.with_object([]){|var, arr| arr << var.otheruser_id }.uniq
+		user.friends.map{|var| var.otheruser_id }
 	end
 end
